@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>JSによる多言語表示切り替え</title>
+</head>
+
+<body>
+	<h1 id="h1_01">JSとCookieを利用した多言語表示の例です。</h1>
+	<p id="p_01">こんにちは</p>
+	<p id="p_02">わたしは、太郎です。</p>
+	<p id="p_03"></p>
+	
+	<script>
+		//言語を設定したlanguageというデータがcookieにあるかどうかを判定
+		var result=document.cookie.indexOf('language');
+		console.log('cookie: '+document.cookie);
+		//データが見つかった場合
+		if(result !== -1){
+			//languageがEnglishかJapaneseかどうかで翻訳メソッドを分ける
+			var cookies=document.cookie;	//改めてcookieを取得
+			var r=cookies.split(';');	//cookieを分割する
+			console.log('cookieの取り出しに成功！')
+			//名前:値に分割するメソッド
+			for(var c of r){	//cookieを１組ずつ取り出すループ
+				var cArray=c.split('=');	//さらに名前=値に分割する
+				console.log('cookieの分解に成功！')
+				//languageというcookieかどうか
+				if(cArray[0]=='language'){
+					//languageの内容が何かを確認
+					//日本語だったら
+					if(cArray[1]=='japanese'){
+						//日本語表示メソッドを呼び出す
+						view_japa();
+					}else{
+						//英語表示メソッドを呼び出す
+						view_eng();
+					}
+				}
+			}
+		}else{	//見つからなかった場合
+			//cookieにlanguage=Japaneseを登録する
+			document.cookie="language=japanese";		//languageをcookieに登録
+			//日本語表示メソッドを呼び出す
+			view_japa();
+		}
+		
+		//日本語表示ボタンが押されたら実行
+		function trans_japa(){
+			console.log('日本語表示ボタンが押されました！');
+			document.cookie="language=;max-age=0";	//cookieのlanguageを削除
+			document.cookie="language=japanese";		//languageをcookieに登録
+			console.log('日本語に設定しました。')
+			//日本語表示メソッドを呼び出す
+			view_japa();
+		}
+		
+		//英語表示ボタンが押されたら実行
+		function trans_eng(){
+			console.log('英語表示ボタンが押されました！');
+			document.cookie="language=;max-age=0";	//cookieのlanguageを削除
+			document.cookie="language=english";		//languageをcookieに登録
+			console.log('英語に設定しました。')
+			view_eng();
+		}
+		
+		
+		//日本語表示メソッド
+		function view_japa(){
+			console.log('日本語で表示');
+			var trans=document.getElementById("h1_01");
+			trans.textContent='JSとCookieを利用した多言語表示の例です。（日本語で表示中）';
+			trans=document.getElementById("p_01");
+			trans.textContent='こんにちは';
+			trans=document.getElementById("p_02");
+			trans.textContent='わたしは、太郎です。';
+			trans=document.getElementById("p_03");
+			trans.innerHTML='<a href="#" onClick="trans_eng()">こちら（英語にする）</a>をクリックすると表示言語が変わります。';		//英語に切り替えボタンを記述させる
+		}
+		
+		//英語表示メソッド
+		function view_eng(){
+			console.log('英語で表示');
+			var trans=document.getElementById("h1_01");
+			trans.textContent='JSとCookieを利用した多言語表示の例です。（英語で表示中）';
+			trans=document.getElementById("p_01");
+			trans.textContent='Hello!';
+			trans=document.getElementById("p_02");
+			trans.textContent='My name is Taro.';
+			trans=document.getElementById("p_03");
+			trans.innerHTML='<a href="#" onClick="trans_japa()">こちら（日本語にする）</a>をクリックすると表示言語が変わります。';
+		}
+		
+	</script>
+	
+</body>
+</html>

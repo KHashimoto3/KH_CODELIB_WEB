@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>カウントダウンボード</title>
+</head>
+
+<body>
+	<h1>残り時間によって表示形式が変わるカウントダウンボードです。</h1>
+	
+	<!--カウントダウンボード-->
+	<div id="countdown" class="countdown">
+	<p style="color: white;" id="nokori"></p>	
+	</div>
+	
+	<style>
+		/*カウントダウン*/
+	div.countdown{
+		text-align: center;
+		width: 60%;
+		height: 80px;
+		margin: 0px auto 20px auto;
+		background-color: rgba(3,175,122,1.00);
+	}
+	div.countdown_day{
+		text-align: center;
+		width: 80%;
+		height: 100px;
+		margin: 0 auto;
+	}
+	</style>
+	
+	<script>
+		//カウントダウンタイマー
+		var countdown = function(due){
+			var now=new Date();		//現在の日付と時刻の取得
+	
+			var rest=due.getTime()-now.getTime();		//終了時間から、現在時間を引く
+			var sec=Math.floor(rest/1000%60);
+			var min=Math.floor(rest/1000/60)%60;
+			var hours=Math.floor(rest/1000/60/60)%24;
+			var days=Math.floor(rest/1000/60/60/24);
+			var count=[days,hours,min,sec];		//上記の結果を配列に入れる
+	
+			return count;		//カウントを返す
+		}
+
+		//終了時刻を取得
+		var goal=new Date(2022,5,13);
+
+		var recalc=function(){
+			//countdownメソッドを呼び出す
+			var counter=countdown(goal);
+	
+			//残り日数を判定する
+			if(counter[0]<=0){	//残り１日を切っていたら
+				//開催まで残り3時間を切っていたら
+				if(counter[1]<3){
+						//本日開催！と表示させる
+						document.getElementById('nokori').innerHTML='イベントは<br><span id="hour" style="font-size: 25pt;">本日開催！</span>';
+				}
+				//開催までまだ3時間以上あったら
+				else{
+						//残り時間を表示させる
+						document.getElementById('nokori').innerHTML='イベント開催まであと<br><span id="hour" style="font-size: 25pt;">'+counter[1]+'</span>時間！';
+				}
+			}else{	//残り１日以上あったら
+				//残り日数を表示させる
+				document.getElementById('nokori').innerHTML='イベント開催まであと<br><span id="day" style="font-size: 25pt;">'+counter[0]+'</span>日！';
+			}
+	
+			refresh();
+		}
+
+		//１秒毎にrecalcメソッドを呼び出すメソッド
+		var refresh=function(){
+			//1秒ごとに再計算
+			setTimeout(recalc,1000);
+		}
+		recalc();
+	</script>
+	
+</body>
+</html>
