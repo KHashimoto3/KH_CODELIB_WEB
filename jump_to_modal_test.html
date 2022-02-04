@@ -1,0 +1,128 @@
+<html>
+    <meta charset="UTF-8">
+    <head>
+        <title>テーブル生成テスト</title>
+        <!--vue.jsの利用-->
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    </head>
+    <body>
+
+        <div id="app">
+            <table id="question_list_table">
+                <tr>
+                    <th>番号</th>
+                    <th>問題文</th>
+                    <th>正解</th>
+                    <th>ジャンル</th>
+                    <th>詳細</th>
+                    <th>削除</th>
+                </tr>
+                <tr v-for="q in questions" :key="q.id">
+                    <td>{{q.id}}</td>
+                    <td>{{q.question}}</td>
+                    <td>{{q.correctIndex}}</td>
+                    <td>{{q.genre}}</td>
+                    <td><button @click="show_more(q.id)">詳細</button></td>
+                    <td><button @click="show_more(q.id)">削除</button></td>
+                </tr>
+            </table>
+            <br>
+            <p>{{message}}</p>
+
+            <!--モーダルウインドウ-->
+            <div class="bg" v-show="isShow">
+                <div class="modal">
+                    <br>
+                    <p>{{modal_id}}</p>
+                    <!--問題文-->
+                    <p>{{modal_question}}</p>
+                    <br>
+                    <p>選択肢：</p>
+                    <p>{{modal_sel1}}</p>
+                    <p>{{modal_sel2}}</p>
+                    <p>{{modal_sel3}}</p>
+                    <p>{{modal_sel4}}</p>
+                    <br>
+                    <!--ジャンル-->
+                    <p>{{modal_genre}}</p>
+                    <button @click="modal_close">閉じる</button>
+                    <br>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            .bg{
+                position: fixed;
+                display: flex;
+                width: 100%;
+                height: 100%;
+                left: 0;
+                top: 0;
+                justify-content: center;
+                text-align: left;
+                background: rgba(0, 0, 0, 0.7);
+            }
+            .modal{
+                position: relative;
+                cursor: default;
+                width: 60%;
+                height: auto;
+                background:#ffffff;
+            }
+        </style>
+
+        <script>
+            new Vue({
+                el:"#app",
+                data:{
+                    questions:[
+                        {id:1,question:"「りんご」を英語に直せ。",choices:[
+                        "apple1", "banana", "orange", "bread"
+                        ],correctIndex:1,genre:"英語"},
+                        {id:2,question:"「りんご」を英語に直せ。",choices:[
+                        "apple2", "banana", "orange", "bread"
+                        ],correctIndex:1,genre:"英語"},
+                        {id:3,question:"「りんご」を英語に直せ。",choices:[
+                        "apple3", "banana", "orange", "bread"
+                        ],correctIndex:1,genre:"英語"},
+                        {id:4,question:"「りんご」を英語に直せ。",choices:[
+                        "apple4", "banana", "orange", "bread"
+                        ],correctIndex:1,genre:"英語"},
+                        {id:5,question:"「りんご」を英語に直せ。",choices:[
+                        "apple5", "banana", "orange", "bread"
+                        ],correctIndex:1,genre:"英語"}
+                    ],
+                    message:"どれかの「詳細」ボタンを押してください！！",
+
+                    //モーダル用
+                    isShow:false,
+                    modal_id:0,
+                    modal_question:"",
+                    modal_sel1:"",
+                    modal_sel2:"",
+                    modal_sel3:"",
+                    modal_sel4:"",
+                    modal_genre:""
+                },
+                methods:{
+                    show_more:function(n){
+                        this.modal_id=n;
+                        this.modal_question="問題文："+this.questions[n-1].question;
+                        this.modal_sel1=this.questions[n-1].choices[0];
+                        this.modal_sel2=this.questions[n-1].choices[1];
+                        this.modal_sel3=this.questions[n-1].choices[2];
+                        this.modal_sel4=this.questions[n-1].choices[3];
+                        this.modal_genre=this.questions[n-1].genre;
+                        this.isShow=true;
+                    },
+                    modal_close:function(){
+                        this.isShow=false;
+                    }
+                }
+            });
+        </script>
+
+
+    </body>
+</html>
