@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Vueを利用したフォーム</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+    <!--vue.jsの利用-->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+
+
+    <!--webアイコンフォント-->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+        integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+
+</head>
+
+<body>
+
+    <h1>バリデーション付きのVueを使ったフォーム</h1>
+
+    <!--問題生成フォーム-->
+    <div class="create_test_form_area" id="app">
+        <form id="create_test_form">
+            <label for="test_title">タイトル：</label><input id="test_title" class="green" type="text" v-model="title"
+                v-on:input="validator('title')"><br>
+            <p class="errors" v-for="error in errors.title">{{error}}</p><br>
+            <label for="test_overview">　　概要：</label><textarea id="test_overview" class="green" name="test_overview"
+                cols="30" role="10" v-model="overview" v-on:input="validator('overview')"></textarea><br>
+            <p class="errors" v-for="error in errors.overview">{{error}}</p><br>
+            <label for="">　問題数：</label><input id="test_num" class="green" type="number" v-model="num"
+                v-on:input="validator('num')"><br>
+            <p class="errors" v-for="error in errors.num">{{error}}</p><br>
+            <label for="">ジャンル：</label><select name="genre_select" class="drop_down" v-model="genre_selected"
+                v-on:change="genreSelect()">
+                <option value="-1">--選択してください--</option>
+                <option v-bind:value="genre.id" v-for="genre in genres" :key="genre.id">{{genre.name}}</option>
+            </select>
+
+            <div id="sub_genre_select_area">
+                <label for="">サブジャンル：</label><select name="sub_genre_select" class="drop_down"
+                    v-model="sub_genre_selected">
+                    <option value="-1">--選択してください--</option>
+                    <option v-bind:value="sub_genre.id" v-for="sub_genre in sub_genres" :key="sub_genre.id">
+                        {{sub_genre.name}}</option>
+                </select>
+            </div>
+            <br>
+            <br>
+            <div class="form_button_area">
+                <button id="clear_button" type="button" v-on:click="clear()">クリア</button>
+                <button id="create_test_button" type="button" v-on:click="create_test()">生成</button>
+            </div>
+        </form>
+    </div>
+
+    <style>
+        p.errors{
+            color: red;
+            font-weight: bold;
+        }
+
+        /*テスト生成*/
+        @media screen and (max-width:880px) {
+            .create_test_form_area {
+                width: 80%;
+                height: auto;
+                margin: 0 auto;
+            }
+        }
+
+        @media screen and (min-width:881px) {
+            .create_test_form_area {
+                width: 600px;
+                height: auto;
+                margin: 0 auto;
+            }
+        }
+
+        #create_test_button {
+            display: inline-block;
+            border-radius: 5%;
+            /* 角丸       */
+            font-size: 18pt;
+            /* 文字サイズ */
+            text-align: center;
+            /* 文字位置   */
+            cursor: pointer;
+            /* カーソル   */
+            padding: 12px 12px;
+            /* 余白       */
+            background: #03af7a;
+            /* 背景色     */
+            color: #ffffff;
+            /* 文字色     */
+            line-height: 1em;
+            /* 1行の高さ  */
+            transition: 0.5s;
+            /* なめらか変化 */
+            border: 2px solid #03af7a;
+            /* 枠の指定 */
+        }
+
+        #create_test_button:hover {
+            color: #03af7a;
+            /* 背景色     */
+            background: #ffffff;
+            /* 文字色     */
+        }
+
+        #clear_button {
+            display: inline-block;
+            border-radius: 5%;
+            /* 角丸       */
+            font-size: 18pt;
+            /* 文字サイズ */
+            text-align: center;
+            /* 文字位置   */
+            cursor: pointer;
+            /* カーソル   */
+            padding: 12px 12px;
+            /* 余白       */
+            background: #949494;
+            /* 背景色     */
+            color: #ffffff;
+            /* 文字色     */
+            line-height: 1em;
+            /* 1行の高さ  */
+            transition: 0.5s;
+            /* なめらか変化 */
+            border: 2px solid #949494;
+            /* 枠の指定 */
+        }
+
+        #clear_button:hover {
+            color: #000000;
+            /* 背景色     */
+            background: #ffffff;
+            /* 文字色     */
+        }
+
+
+        input.green,
+        textarea.green {
+            /*border: 2px solid rgba(3, 175, 122, 1);*/
+            border: 2px solid rgb(173, 173, 173, 1);
+            font-size: 20pt;
+        }
+
+        select.drop_down {
+            width: 200px;
+        }
+
+        #sub_genre_select_area {
+            display: none;
+        }
+
+        /*テストの生成ボタンは最初は非表示にしておく*/
+        #create_test_button {
+            display: none;
+        }
+    </style>
+
+    <script>
+        var vue = new Vue({
+            el: '#app',
+            data: {
+                title: '',
+                overview: '',
+                num: '',
+                genre_selected: null,
+                sub_genre_selected: null,
+                count: 0,
+                errors: {
+                    title: [],
+                    overview: [],
+                    num: [],
+                },
+                //ジャンル一覧
+                genres: [
+                    {
+                        id: 1, name: "ジャンルA", sub_genres: [
+                            { id: 1, name: "ジャンルA1" },
+                            { id: 2, name: "ジャンルA2" },
+                            { id: 3, name: "ジャンルA3" },
+                            { id: 4, name: "ジャンルA4" },
+                        ]
+                    },
+                    {
+                        id: 2, name: "ジャンルB", sub_genres: [
+                            { id: 1, name: "ジャンルB1" },
+                            { id: 2, name: "ジャンルB2" },
+                            { id: 3, name: "ジャンルB3" },
+                            { id: 4, name: "ジャンルB4" },
+                        ]
+                    },
+                    {
+                        id: 3, name: "ジャンルC", sub_genres: [
+                            { id: 1, name: "ジャンルC1" },
+                            { id: 2, name: "ジャンルC2" },
+                            { id: 3, name: "ジャンルC3" },
+                            { id: 4, name: "ジャンルC4" },
+                        ]
+                    },
+                    {
+                        id: 4, name: "ジャンルD", sub_genres: [
+                            { id: 1, name: "ジャンルD1" },
+                            { id: 2, name: "ジャンルD2" },
+                            { id: 3, name: "ジャンルD3" },
+                            { id: 4, name: "ジャンルD4" },
+                        ]
+                    }
+                ],
+                sub_genres: []
+            },
+            methods: {
+                genreSelect: function () {
+                    const sub_genre_select = document.getElementById("sub_genre_select_area");
+                    this.sub_genres.splice(0); //既に設定されている小ジャンルを
+                    if (this.genre_selected != -1) {
+                        sub_genre_select.style.display = "inline";
+                        //選択されたジャンルに属するサブジャンルをsub_genresに入れる
+                        this.genres[this.genre_selected - 1].sub_genres.forEach(element => {
+                            this.sub_genres.push(element);
+                        });
+                    } else {
+                        sub_genre_select.style.display = "none";
+                    }
+                },
+                validator: function (type) {
+                    let title = []
+                    let overview = []
+                    let num = []
+                    let message_must = 'この項目は必須です！'
+                    let message_zero = '問題数は1以上必要です！'
+                    const button = document.getElementById("create_test_button");
+
+                    if (type === 'title') {
+                        if (this.title.length == 0) {
+                            title.push(message_must);    //この関数内のtitleにmessageを格納
+                            //生成ボタンの非表示
+                            button.style.display = "none";
+                        }
+                        this.errors.title = title;    //dataのerrorsのtitleに、この関数内のtitleを追加
+                    } else if (type === 'overview') {
+                        if (this.overview.length == 0) {
+                            overview.push(message_must);
+                            button.style.display = "none";
+                        }
+                        this.errors.overview = overview;
+                    } else if (type === 'num') {
+                        if (this.num.length == 0) {
+                            num.push(message_must);
+                            button.style.display = "none";
+                        } else if (Number(this.num) < 1) {
+                            num.push(message_zero);
+                            button.style.display = "none";
+                        }
+                        this.errors.num = num;
+                    }
+
+                    //すべての項目が正しく埋まっているかどうか？
+                    if ((this.title.length > 0) && (this.overview.length > 0) && (this.num.length > 0) && (this.num > 0)) {
+                        button.style.display = "inline";
+                    }
+
+                },
+                clear: function () {
+                    const button = document.getElementById("create_test_button");
+                    //全てを初期化
+                    this.title = '';
+                    this.overview = '';
+                    this.num = '';
+                    button.style.display = "none";
+                }
+            }
+
+        });
+    </script>
+</body>
+
+</html>
