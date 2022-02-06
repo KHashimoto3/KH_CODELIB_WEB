@@ -58,7 +58,7 @@
 
     <style>
         p.errors{
-            color: red;
+            color: #ff0000;
             font-weight: bold;
         }
 
@@ -170,10 +170,10 @@
                 title: '',
                 overview: '',
                 num: '',
-                genre_selected: null,
-                sub_genre_selected: null,
-                count: 0,
-                errors: {
+                genre_selected: null,   //選択されたジャンル
+                sub_genre_selected: null,   //選択されたサブジャンル
+                count: 0,       //記入済みのinput数
+                errors: {       //エラーメッセージを格納する配列
                     title: [],
                     overview: [],
                     num: [],
@@ -216,6 +216,7 @@
                 sub_genres: []
             },
             methods: {
+                //選択されたジャンルに応じてサブジャンルを表示する
                 genreSelect: function () {
                     const sub_genre_select = document.getElementById("sub_genre_select_area");
                     this.sub_genres.splice(0); //既に設定されている小ジャンルを
@@ -229,6 +230,7 @@
                         sub_genre_select.style.display = "none";
                     }
                 },
+                //入力のバリデーション
                 validator: function (type) {
                     let title = []
                     let overview = []
@@ -267,6 +269,7 @@
                     }
 
                 },
+                //入力をクリアする
                 clear: function () {
                     const button = document.getElementById("create_test_button");
                     //全てを初期化
