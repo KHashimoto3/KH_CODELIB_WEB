@@ -4,6 +4,11 @@
 # 詳細な内容
 各ファイルは以下の内容に対応しています。
 
+<jQueryを利用>  
+* text_changeフォルダ  
+　kirikae1.html・・・JavaScriptのみを使った、クリックによる文章の切り替え  
+ 　kirikae1_jquery.html・・・jQueryを使った、クリックによる文章の切り替え  
+
 <Vue.jsを利用>
 * Vue_filterフォルダ・・・Vueを利用した、一覧の絞り込み機能
 * jump_to_modal_test.html・・・Vueを使ってテーブルを作成し、各行内のボタンを押した時に、行ごとに違う内容をモーダルで表示する機能
